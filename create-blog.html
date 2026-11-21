@@ -1,0 +1,90 @@
+<link rel="stylesheet" href="css/style.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Blog - BlogSpace</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <h2>BlogSpace</h2>
+
+        <div>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="create-blog.html">Create Blog</a>
+            <a href="#" id="logoutLink">Logout</a>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+
+        <div class="auth-card create-blog-card">
+
+            <h1>Create New Blog</h1>
+
+            <p>Share your thoughts and ideas with the world.</p>
+
+            <form id="createBlogForm">
+
+                <label for="blogTitle">Blog Title</label>
+
+                <input
+                    type="text"
+                    id="blogTitle"
+                    placeholder="Enter blog title"
+                    required
+                >
+
+                <label for="blogCategory">Blog Category</label>
+
+                <select id="blogCategory" required>
+                    <option value="">Select Category</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Education">Education</option>
+                    <option value="Programming">Programming</option>
+                    <option value="Lifestyle">Lifestyle</option>
+                    <option value="Travel">Travel</option>
+                </select>
+
+                <label for="blogDescription">Blog Description</label>
+
+                <textarea
+                    id="blogDescription"
+                    rows="6"
+                    placeholder="Write your blog here..."
+                    required
+                ></textarea>
+
+                <label for="blogImage">Blog Image (Optional)</label>
+
+                <input
+                    type="file"
+                    id="blogImage"
+                    accept="image/png,image/jpeg,image/webp"
+                >
+
+                <button type="submit" class="auth-button">
+                    Publish Blog
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                <a href="dashboard.html">Back to Dashboard</a>
+            </p>
+
+        </div>
+
+    </section>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>

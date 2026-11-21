@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BlogSpace | Share Your Thoughts</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+        <nav class="navbar">
+
+            <a href="index.html" class="logo">
+                BlogSpace<span>.</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html" class="register-link">Register</a></li>
+            </ul>
+
+        </nav>
+    </header>
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-tag">WELCOME TO BLOGSPACE</span>
+
+            <h1>Ideas Worth Sharing.<br>
+                Stories Worth Reading.</h1>
+
+            <p>
+                Discover interesting stories, share your knowledge,
+                and explore new ideas with our blogging community.
+            </p>
+
+            <a href="#latest-blogs" class="primary-btn">
+                Explore Blogs
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- Search Section -->
+    <section class="search-section">
+
+        <h2>Find Your Favourite Blogs</h2>
+
+        <p>Search for articles and discover something new.</p>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search blogs..."
+                aria-label="Search blogs"
+            >
+
+            <button onclick="searchBlogs()">Search</button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Category Section -->
+    <section class="category-section">
+
+        <h2>Explore Categories</h2>
+
+        <div class="category-container">
+
+            <button class="category-btn active"
+                onclick="filterBlogs('all', this)">
+                All
+            </button>
+
+            <button class="category-btn"
+                onclick="filterBlogs('Technology', this)">
+                Technology
+            </button>
+
+            <button class="category-btn"
+                onclick="filterBlogs('Programming', this)">
+                Programming
+            </button>
+
+            <button class="category-btn"
+                onclick="filterBlogs('Education', this)">
+                Education
+            </button>
+
+            <button class="category-btn"
+                onclick="filterBlogs('Lifestyle', this)">
+                Lifestyle
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Latest Blogs Section -->
+    <section class="blogs" id="latest-blogs">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Latest Blogs</h2>
+                <p>Explore our latest articles and stories.</p>
+            </div>
+
+        </div>
+
+
+        <div class="blog-container" id="blogContainer">
+
+
+            <!-- Blog 1 -->
+            <article class="blog-card"
+                data-category="Technology"
+                data-title="Future of Artificial Intelligence">
+
+                <div class="blog-image image-one">
+                    <span>TECHNOLOGY</span>
+                </div>
+
+                <div class="blog-content">
+
+                    <h3>Future of Artificial Intelligence</h3>
+
+                    <p>
+                        Discover how artificial intelligence
+                        is changing our everyday lives.
+                    </p>
+
+                    <button onclick="readBlog('Future of Artificial Intelligence')">
+                        Read More →
+                    </button>
+
+                </div>
+
+            </article>
+
+
+            <!-- Blog 2 -->
+            <article class="blog-card"
+                data-category="Programming"
+                data-title="Learn Programming from Scratch">
+
+                <div class="blog-image image-two">
+                    <span>PROGRAMMING</span>
+                </div>
+
+                <div class="blog-content">
+
+                    <h3>Learn Programming from Scratch</h3>
+
+                    <p>
+                        Start your coding journey with
+                        simple programming concepts.
+                    </p>
+
+                    <button onclick="readBlog('Learn Programming from Scratch')">
+                        Read More →
+                    </button>
+
+                </div>
+
+            </article>
+
+
+            <!-- Blog 3 -->
+            <article class="blog-card"
+                data-category="Education"
+                data-title="Importance of Learning">
+
+                <div class="blog-image image-three">
+                    <span>EDUCATION</span>
+                </div>
+
+                <div class="blog-content">
+
+                    <h3>Importance of Learning</h3>
+
+                    <p>
+                        Learn why continuous learning
+                        is important for personal growth.
+                    </p>
+
+                    <button onclick="readBlog('Importance of Learning')">
+                        Read More →
+                    </button>
+
+                </div>
+
+            </article>
+
+
+            <!-- Blog 4 -->
+            <article class="blog-card"
+                data-category="Lifestyle"
+                data-title="How to Manage Your Time">
+
+                <div class="blog-image image-four">
+                    <span>LIFESTYLE</span>
+                </div>
+
+                <div class="blog-content">
+
+                    <h3>How to Manage Your Time</h3>
+
+                    <p>
+                        Simple ways to organize your
+                        daily activities effectively.
+                    </p>
+
+                    <button onclick="readBlog('How to Manage Your Time')">
+                        Read More →
+                    </button>
+
+                </div>
+
+            </article>
+
+
+        </div>
+
+        <p id="noResults" class="no-results" hidden>
+            No blogs found. Try another search.
+        </p>
+
+    </section>
+
+
+    <!-- Call To Action -->
+    <section class="cta-section">
+
+        <h2>Have a Story to Share?</h2>
+
+        <p>Join BlogSpace and start sharing your ideas today.</p>
+
+        <a href="register.html" class="primary-btn">
+            Join Our Community
+        </a>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <h2>BlogSpace.</h2>
+
+        <p>Share your thoughts. Inspire the world.</p>
+
+        <p class="copyright">
+            © 2026 BlogSpace. All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+
+</body>
+</html>

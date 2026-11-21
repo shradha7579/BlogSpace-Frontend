@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Read Blog - BlogSpace</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <h2>BlogSpace</h2>
+
+        <div>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="my-blogs.html">My Blogs</a>
+            <a href="#" id="logoutLink">Logout</a>
+        </div>
+    </nav>
+
+    <section class="dashboard-section">
+
+        <div class="dashboard-container">
+
+            <div class="blog-content" id="fullBlogContent">
+
+                <h1 id="fullBlogTitle">Loading Blog...</h1>
+
+                <p id="fullBlogCategory"></p>
+
+                <p id="fullBlogAuthor"></p>
+
+                <p id="fullBlogDate"></p>
+
+                <img id="fullBlogImage"
+                     alt="Blog image"
+                     style="display:none; max-width:100%; height:auto;">
+
+                <p id="fullBlogDescription"></p>
+
+            </div>
+
+            <p id="blogNotFound" hidden>
+                Blog not found. It may have been deleted.
+            </p>
+
+            <p style="margin-top:30px;">
+                <a href="index.html">Back to Home Page</a>
+            </p>
+
+        </div>
+
+    </section>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>
