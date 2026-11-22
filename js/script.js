@@ -145,6 +145,9 @@ if (searchInput) {
 }
 
 
+
+const API_URL = "http://localhost:5000/api";
+
 // =====================================
 // REGISTER PAGE FUNCTIONALITY
 // =====================================
@@ -153,7 +156,7 @@ const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
 
-    registerForm.addEventListener("submit", function(event) {
+    registerForm.addEventListener("submit", async function(event) {
 
         event.preventDefault();
 
@@ -172,72 +175,90 @@ if (registerForm) {
             return;
         }
 
-        let users = JSON.parse(localStorage.getItem("users")) || [];
+        try {
 
-        const existingUser = users.find(function(user) {
-            return user.email === email;
-        });
+            const response = await fetch(`${API_URL}/auth/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password
+                })
+            });
 
-        if (existingUser) {
-            alert("Email is already registered!");
-            return;
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || "Registration failed!");
+                return;
+            }
+
+            alert("Registration successful! Please login.");
+
+            registerForm.reset();
+
+            window.location.href = "login.html";
+
+        } catch (error) {
+
+            console.error("Registration error:", error);
+            alert("Unable to connect to the backend server!");
+
         }
-
-        users.push({
-            name: name,
-            email: email,
-            password: password
-        });
-
-        localStorage.setItem("users", JSON.stringify(users));
-
-        alert("Registration successful! Please login.");
-
-        window.location.href = "login.html";
 
     });
 
 }
 
 
-// =====================================
-// LOGIN PAGE FUNCTIONALITY
-// =====================================
 
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
 
-    loginForm.addEventListener("submit", function(event) {
+    loginForm.addEventListener("submit", async function(event) {
 
         event.preventDefault();
 
         const email = document.getElementById("email").value.trim().toLowerCase();
         const password = document.getElementById("password").value;
 
-        const users = JSON.parse(localStorage.getItem("users")) || [];
+        try {
 
-        const user = users.find(function(user) {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
 
-            return user.email === email &&
-                   user.password === password;
+            const data = await response.json();
 
-        });
+            if (!response.ok) {
+                alert(data.message || "Invalid email or password!");
+                return;
+            }
 
-        if (user) {
+            // Save login information
+            localStorage.setItem("token", data.token);
 
-            localStorage.setItem("loggedInUser", JSON.stringify({
-                name: user.name,
-                email: user.email
-            }));
+            localStorage.setItem("loggedInUser", JSON.stringify(data.user));
 
             alert("Login successful!");
 
             window.location.href = "dashboard.html";
 
-        } else {
+        } catch (error) {
 
-            alert("Invalid email or password!");
+            console.error("Login error:", error);
+            alert("Unable to connect to the backend server!");
 
         }
 
@@ -299,31 +320,25 @@ if (logoutLink) {
 
 
 
-// =====================================
-// CREATE BLOG FUNCTIONALITY
-// =====================================
-
 const createBlogForm = document.getElementById("createBlogForm");
+
+// =====================================
+// CREATE BLOG USING BACKEND API
+// =====================================
 
 if (createBlogForm) {
 
-    createBlogForm.addEventListener("submit", function(event) {
+    createBlogForm.addEventListener("submit", async function(event) {
 
         event.preventDefault();
 
         const title = document.getElementById("blogTitle").value.trim();
-
         const category = document.getElementById("blogCategory").value;
-
         const description = document.getElementById("blogDescription").value.trim();
 
-        const imageInput = document.getElementById("blogImage");
+        const token = localStorage.getItem("token");
 
-        const loggedInUser = JSON.parse(
-            localStorage.getItem("loggedInUser")
-        );
-
-        if (!loggedInUser) {
+        if (!token) {
             alert("Please login before publishing a blog!");
             window.location.href = "login.html";
             return;
@@ -334,60 +349,41 @@ if (createBlogForm) {
             return;
         }
 
-        function saveBlog(imageData) {
+        try {
 
-            let blogs = JSON.parse(localStorage.getItem("blogs")) || [];
+            const response = await fetch(`${API_URL}/blogs`, {
+                method: "POST",
 
-            const newBlog = {
-                id: Date.now(),
-                title: title,
-                category: category,
-                description: description,
-                image: imageData,
-                author: loggedInUser.name,
-                date: new Date().toLocaleDateString()
-            };
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
 
-            blogs.push(newBlog);
+                body: JSON.stringify({
+                    title: title,
+                    category: category,
+                    description: description,
+                    image: ""
+                })
+            });
 
-            localStorage.setItem("blogs", JSON.stringify(blogs));
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || "Blog creation failed!");
+                return;
+            }
 
             alert("Blog published successfully!");
 
             createBlogForm.reset();
 
             window.location.href = "index.html";
-        }
 
-        if (imageInput.files.length > 0) {
+        } catch (error) {
 
-            const file = imageInput.files[0];
-
-            if (!file.type.startsWith("image/")) {
-                alert("Please select a valid image!");
-                return;
-            }
-
-            if (file.size > 2 * 1024 * 1024) {
-                alert("Image size must be less than 2 MB!");
-                return;
-            }
-
-            const reader = new FileReader();
-
-            reader.onload = function(event) {
-                saveBlog(event.target.result);
-            };
-
-            reader.onerror = function() {
-                alert("Unable to read image. Please try again.");
-            };
-
-            reader.readAsDataURL(file);
-
-        } else {
-
-            saveBlog("");
+            console.error("Create blog error:", error);
+            alert("Unable to connect to backend server!");
 
         }
 
@@ -397,116 +393,163 @@ if (createBlogForm) {
 
 
 
+
 // Display blogs published by users on the Home Page
-function displayPublishedBlogs() {
+
+// =====================================
+// DISPLAY BLOGS FROM MONGODB
+// =====================================
+
+async function displayPublishedBlogs() {
+
     const blogContainer = document.getElementById("blogContainer");
 
     if (!blogContainer) {
         return;
     }
 
-    let publishedBlogs = [];
-
     try {
-        publishedBlogs = JSON.parse(localStorage.getItem("blogs")) || [];
-    } catch (error) {
-        console.error("Unable to load published blogs:", error);
-        return;
-    }
 
-    publishedBlogs.forEach(function(blog) {
+        const response = await fetch(`${API_URL}/blogs`);
 
-        const article = document.createElement("article");
-        article.className = "blog-card";
+        const blogs = await response.json();
 
-        article.dataset.category = blog.category || "";
-        article.dataset.title = blog.title || "";
-
-        // Blog image section
-        const imageBox = document.createElement("div");
-        imageBox.className = "blog-image";
-
-        if (blog.image) {
-            const image = document.createElement("img");
-            image.src = blog.image;
-            image.alt = blog.title || "Blog image";
-            image.style.width = "100%";
-            image.style.height = "100%";
-            image.style.objectFit = "cover";
-
-            imageBox.appendChild(image);
+        if (!response.ok) {
+            throw new Error("Unable to fetch blogs");
         }
 
-        const categoryLabel = document.createElement("span");
-        categoryLabel.textContent = (blog.category || "BLOG").toUpperCase();
-        imageBox.appendChild(categoryLabel);
+        blogs.forEach(function(blog) {
 
-        // Blog content section
-        const content = document.createElement("div");
-        content.className = "blog-content";
+            const article = document.createElement("article");
+            article.className = "blog-card";
 
-        const heading = document.createElement("h3");
-        heading.textContent = blog.title || "Untitled Blog";
+            article.dataset.category = blog.category || "";
+            article.dataset.title = blog.title || "";
 
-        const description = document.createElement("p");
-        description.textContent = blog.description || "";
+            // Image section
+            const imageBox = document.createElement("div");
+            imageBox.className = "blog-image";
 
-        const author = document.createElement("p");
-        author.textContent = "By " + (blog.author || "Unknown");
+            if (blog.image) {
+                const image = document.createElement("img");
+                image.src = blog.image;
+                image.alt = blog.title;
+                image.style.width = "100%";
+                image.style.height = "100%";
+                image.style.objectFit = "cover";
+                imageBox.appendChild(image);
+            }
 
-        const date = document.createElement("p");
-        date.textContent = blog.date || "";
+            const categoryLabel = document.createElement("span");
+            categoryLabel.textContent =
+                (blog.category || "BLOG").toUpperCase();
 
-        const readButton = document.createElement("button");
-        readButton.textContent = "Read More →";
+            imageBox.appendChild(categoryLabel);
 
-        readButton.addEventListener("click", function() {
-            readBlog(blog.title);
+            // Content section
+            const content = document.createElement("div");
+            content.className = "blog-content";
+
+            const heading = document.createElement("h3");
+            heading.textContent = blog.title;
+
+            const description = document.createElement("p");
+            description.textContent = blog.description;
+
+            const author = document.createElement("p");
+            author.textContent =
+                "By " + (blog.author?.name || "Unknown");
+
+            const date = document.createElement("p");
+            date.textContent =
+                "Published: " +
+                new Date(blog.createdAt).toLocaleDateString();
+
+            const readButton = document.createElement("button");
+            readButton.textContent = "Read More →";
+
+            readButton.addEventListener("click", function() {
+
+                localStorage.setItem(
+                    "currentReadingBlog",
+                    JSON.stringify(blog)
+                );
+
+                window.location.href = "read-blog.html";
+
+            });
+
+            content.appendChild(heading);
+            content.appendChild(description);
+            content.appendChild(author);
+            content.appendChild(date);
+            content.appendChild(readButton);
+
+            article.appendChild(imageBox);
+            article.appendChild(content);
+
+            blogContainer.appendChild(article);
+
         });
 
-        content.appendChild(heading);
-        content.appendChild(description);
-        content.appendChild(author);
-        content.appendChild(date);
-        content.appendChild(readButton);
+    } catch (error) {
 
-        article.appendChild(imageBox);
-        article.appendChild(content);
+        console.error("Fetch blogs error:", error);
+        alert("Unable to load blogs from the server.");
 
-        blogContainer.appendChild(article);
-    });
+    }
 }
 
-// Run when the Home Page loads
+// Load blogs when Home Page opens
 displayPublishedBlogs();
 
 
-// Display only the logged-in user's blogs
+
+// =====================================
+// DISPLAY MY BLOGS FROM BACKEND
+// =====================================
+
 const myBlogsContainer = document.getElementById("myBlogsContainer");
 
 if (myBlogsContainer) {
 
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    async function loadMyBlogs() {
 
-    if (!loggedInUser) {
-        window.location.href = "login.html";
-    } else {
+        const token = localStorage.getItem("token");
 
-        const allBlogs = JSON.parse(localStorage.getItem("blogs")) || [];
+        if (!token) {
+            window.location.href = "login.html";
+            return;
+        }
 
-        const userBlogs = allBlogs.filter(function(blog) {
-            return blog.author === loggedInUser.name;
-        });
+        try {
 
-        const message = document.getElementById("myBlogsMessage");
+            const response = await fetch(`${API_URL}/blogs/my-blogs`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
 
-        if (userBlogs.length === 0) {
-            message.hidden = false;
-        } else {
+            const blogs = await response.json();
 
-            message.hidden = true;
+            if (!response.ok) {
+                alert(blogs.message || "Unable to load your blogs.");
+                return;
+            }
 
-            userBlogs.forEach(function(blog) {
+            myBlogsContainer.innerHTML = "";
+
+            const message = document.getElementById("myBlogsMessage");
+
+            if (blogs.length === 0) {
+                if (message) message.hidden = false;
+                return;
+            }
+
+            if (message) message.hidden = true;
+
+            blogs.forEach(function(blog) {
 
                 const card = document.createElement("div");
                 card.className = "blog-card";
@@ -524,27 +567,50 @@ if (myBlogsContainer) {
                 description.textContent = blog.description;
 
                 const date = document.createElement("p");
-                date.textContent = "Published: " + blog.date;
+                date.textContent = "Published: " +
+                    new Date(blog.createdAt).toLocaleDateString();
 
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "Delete Blog";
 
-                deleteButton.addEventListener("click", function() {
+                deleteButton.addEventListener("click", async function() {
 
-                    const confirmDelete = confirm("Are you sure you want to delete this blog?");
+                    const confirmDelete = confirm(
+                        "Are you sure you want to delete this blog?"
+                    );
 
-                    if (confirmDelete) {
+                    if (!confirmDelete) return;
 
-                        const updatedBlogs = allBlogs.filter(function(item) {
-                            return item.id !== blog.id;
-                        });
+                    try {
 
-                        localStorage.setItem("blogs", JSON.stringify(updatedBlogs));
+                        const deleteResponse = await fetch(
+                            `${API_URL}/blogs/${blog._id}`,
+                            {
+                                method: "DELETE",
+                                headers: {
+                                    "Authorization": "Bearer " + token
+                                }
+                            }
+                        );
+
+                        const result = await deleteResponse.json();
+
+                        if (!deleteResponse.ok) {
+                            alert(result.message || "Delete failed!");
+                            return;
+                        }
 
                         alert("Blog deleted successfully!");
 
-                        location.reload();
+                        loadMyBlogs();
+
+                    } catch (error) {
+
+                        console.error("Delete error:", error);
+                        alert("Unable to delete blog.");
+
                     }
+
                 });
 
                 content.appendChild(title);
@@ -554,13 +620,23 @@ if (myBlogsContainer) {
                 content.appendChild(deleteButton);
 
                 card.appendChild(content);
-
                 myBlogsContainer.appendChild(card);
 
             });
+
+        } catch (error) {
+
+            console.error("My Blogs error:", error);
+            alert("Unable to connect to backend.");
+
         }
+
     }
+
+    loadMyBlogs();
+
 }
+
 
 
 
