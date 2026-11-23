@@ -73,6 +73,58 @@ router.get("/my-blogs", authMiddleware, async (req, res) => {
     }
 });
 
+// UPDATE BLOG
+router.put("/:id", authMiddleware, async (req, res) => {
+    try {
+        const { title, category, description, image } = req.body;
+
+        if (!title || !category || !description) {
+            return res.status(400).json({
+                message: "Please fill all required fields"
+            });
+        }
+
+        const updatedData = {
+            title,
+            category,
+            description
+        };
+
+        if (image !== undefined) {
+            updatedData.image = image;
+        }
+
+        const updatedBlog = await Blog.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                author: req.user.id
+            },
+            { $set: updatedData },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedBlog) {
+            return res.status(404).json({
+                message: "Blog not found or you are not authorized"
+            });
+        }
+
+        res.json({
+            message: "Blog updated successfully!",
+            blog: updatedBlog
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Blog update failed",
+            error: error.message
+        });
+    }
+});
+
 // DELETE BLOG
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
