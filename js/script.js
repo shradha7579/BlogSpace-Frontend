@@ -1,7 +1,7 @@
 
 console.log("BlogSpace application started successfully!");
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://blogspace-frontend-rivl.onrender.com/api";
 
 // =====================================
 // HELPER FUNCTIONS
