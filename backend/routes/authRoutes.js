@@ -17,9 +17,9 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        if (password.length < 6) {
+        if (password.length < 8) {
             return res.status(400).json({
-                message: "Password must be at least 6 characters"
+                message: "Password must be at least 8 characters"
             });
         }
 
@@ -115,4 +115,25 @@ router.post("/login", async (req, res) => {
     }
 });
 
+// GET LOGGED-IN USER PROFILE
+router.get("/me", require("../middleware/authMiddleware"), async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.json({
+            user: user
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to fetch profile"
+        });
+    }
+});
 module.exports = router;
